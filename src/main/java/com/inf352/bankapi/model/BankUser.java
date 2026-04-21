@@ -1,17 +1,21 @@
 package com.inf352.bankapi.model;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -42,7 +46,7 @@ public class BankUser {
 
         @NotBlank(message = "L'email est obligatoire")
         @Email(message = "L'email doit etre valide")
-        @Column(nullable = false)
+        @Column(nullable = false, unique = true)
         @Schema(description = "Adresse email", example = "awa@example.com")
         private String email;
 
@@ -56,10 +60,19 @@ public class BankUser {
         @Column(name = "account_number", nullable = false, updatable = false)
         private String accountNumber;
 
+        @Schema(description = "Jeton d'acces API", accessMode = Schema.AccessMode.WRITE_ONLY)
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        @Column(name = "api_token", nullable = false, unique = true, updatable = false)
+        private String apiToken;
+
         @Schema(description = "Date de creation en UTC", accessMode = Schema.AccessMode.READ_ONLY)
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         @Column(name = "created_at", nullable = false, updatable = false)
         private Instant createdAt;
+
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+        private List<BankAccount> accounts = new ArrayList<>();
 
         public BankUser() {
         }
@@ -81,6 +94,9 @@ public class BankUser {
                 if (accountNumber == null || accountNumber.isBlank()) {
                         accountNumber = generateAccountNumber();
                 }
+                if (apiToken == null || apiToken.isBlank()) {
+                        apiToken = generateApiToken();
+                }
                 if (createdAt == null) {
                         createdAt = Instant.now();
                 }
@@ -89,6 +105,10 @@ public class BankUser {
         private String generateAccountNumber() {
                 String token = UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase(Locale.ROOT);
                 return "ACC-" + token;
+        }
+
+        private String generateApiToken() {
+                return UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", "");
         }
 
         private String normalize(String value) {
@@ -143,11 +163,27 @@ public class BankUser {
                 this.accountNumber = accountNumber;
         }
 
+        public String getApiToken() {
+                return apiToken;
+        }
+
+        public void setApiToken(String apiToken) {
+                this.apiToken = apiToken;
+        }
+
         public Instant getCreatedAt() {
                 return createdAt;
         }
 
         public void setCreatedAt(Instant createdAt) {
                 this.createdAt = createdAt;
+        }
+
+        public List<BankAccount> getAccounts() {
+                return accounts;
+        }
+
+        public void setAccounts(List<BankAccount> accounts) {
+                this.accounts = accounts;
         }
 }
