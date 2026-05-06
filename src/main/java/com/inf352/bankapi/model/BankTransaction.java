@@ -53,6 +53,9 @@ public class BankTransaction {
     @JsonIgnore
     private BankAccount account;
 
+    @Schema(description = "Description de la transaction, par exemple pour les virements", example = "Virement vers ACC-XYZ")
+    private String description;
+
     @PrePersist
     private void prepareForInsert() {
         if (createdAt == null) {
@@ -114,5 +117,13 @@ public class BankTransaction {
 
     public void setAccount(BankAccount account) {
         this.account = account;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

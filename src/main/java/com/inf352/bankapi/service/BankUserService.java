@@ -4,12 +4,15 @@ import java.util.List;
 
 import com.inf352.bankapi.controller.UserRepository;
 import com.inf352.bankapi.exception.DuplicateResourceException;
+import com.inf352.bankapi.exception.InvalidVerificationCodeException;
 import com.inf352.bankapi.exception.ResourceNotFoundException;
-import com.inf352.bankapi.model.BankAccount;
 import com.inf352.bankapi.model.BankUser;
 import com.inf352.bankapi.repository.BankAccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 @Transactional
@@ -17,10 +20,12 @@ public class BankUserService {
 
     private final UserRepository userRepository;
     private final BankAccountRepository bankAccountRepository;
+    private final EmailService emailService;
 
-    public BankUserService(UserRepository userRepository, BankAccountRepository bankAccountRepository) {
+    public BankUserService(UserRepository userRepository, BankAccountRepository bankAccountRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.bankAccountRepository = bankAccountRepository;
+        this.emailService = emailService;
     }
 
     public BankUser createUser(BankUser user) {
@@ -28,12 +33,35 @@ public class BankUserService {
             throw new DuplicateResourceException("Un utilisateur avec cet email existe deja");
         }
 
-        BankAccount primaryAccount = new BankAccount();
-        primaryAccount.setAccountNumber(user.getAccountNumber());
-        primaryAccount.setUser(user);
-        user.getAccounts().add(primaryAccount);
+        String verificationCode = generateVerificationCode();
+        user.setVerificationCode(verificationCode);
+        user.setVerified(false);
 
-        return userRepository.save(user);
+        BankUser savedUser = userRepository.save(user);
+        emailService.sendVerificationEmail(savedUser.getEmail(), verificationCode);
+
+        return savedUser;
+    }
+
+    public BankUser verifyUser(String email, String code) {
+        BankUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
+
+        if (user.isVerified()) {
+            return user; // Already verified
+        }
+
+        if (user.getVerificationCode() != null && user.getVerificationCode().equals(code)) {
+            user.setVerified(true);
+            user.setVerificationCode(null); // Code is used, invalidate it
+            return userRepository.save(user);
+        } else {
+            throw new InvalidVerificationCodeException("Code de vérification invalide");
+        }
+    }
+    
+    private String generateVerificationCode() {
+        return String.format("%04d", new SecureRandom().nextInt(10000));
     }
 
     public List<BankUser> listUsers() {

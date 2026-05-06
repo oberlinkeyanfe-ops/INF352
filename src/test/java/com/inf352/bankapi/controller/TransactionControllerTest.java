@@ -62,7 +62,7 @@ class TransactionControllerTest {
 
         Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(50));
 
-        mockMvc.perform(post("/api/accounts/ACC-123456789ABC/deposit")
+        mockMvc.perform(post("/api/transactions/deposit/ACC-123456789ABC")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -77,7 +77,7 @@ class TransactionControllerTest {
 
             Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(50));
 
-            mockMvc.perform(post("/api/accounts/ACC-404/deposit")
+            mockMvc.perform(post("/api/transactions/deposit/ACC-404")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
@@ -87,7 +87,7 @@ class TransactionControllerTest {
             void depositShouldFailValidation() throws Exception {
             Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(-1));
 
-            mockMvc.perform(post("/api/accounts/ACC-123456789ABC/deposit")
+            mockMvc.perform(post("/api/transactions/deposit/ACC-123456789ABC")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -109,7 +109,7 @@ class TransactionControllerTest {
 
             Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(40));
 
-            mockMvc.perform(post("/api/accounts/ACC-123456789ABC/withdraw")
+            mockMvc.perform(post("/api/transactions/withdraw/ACC-123456789ABC")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -124,7 +124,7 @@ class TransactionControllerTest {
 
             Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(40));
 
-            mockMvc.perform(post("/api/accounts/ACC-404/withdraw")
+            mockMvc.perform(post("/api/transactions/withdraw/ACC-404")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
@@ -137,7 +137,7 @@ class TransactionControllerTest {
 
             Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(5000));
 
-            mockMvc.perform(post("/api/accounts/ACC-123456789ABC/withdraw")
+            mockMvc.perform(post("/api/transactions/withdraw/ACC-123456789ABC")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -147,7 +147,7 @@ class TransactionControllerTest {
             void withdrawShouldFailValidation() throws Exception {
             Map<String, BigDecimal> request = Map.of("amount", BigDecimal.ZERO);
 
-            mockMvc.perform(post("/api/accounts/ACC-123456789ABC/withdraw")
+            mockMvc.perform(post("/api/transactions/withdraw/ACC-123456789ABC")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());

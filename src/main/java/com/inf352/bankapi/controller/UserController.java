@@ -6,6 +6,10 @@ import com.inf352.bankapi.model.BankUser;
 import com.inf352.bankapi.service.BankUserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -39,7 +43,16 @@ public class UserController {
             @ApiResponse(responseCode = "201", description = "Utilisateur cree avec succes"),
             @ApiResponse(responseCode = "400", description = "Donnees invalides")
     })
-    public ResponseEntity<BankUser> createUser(@Valid @RequestBody BankUser user) {
+        public ResponseEntity<BankUser> createUser(
+            @Valid
+            @RequestBody
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                required = true,
+                content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = BankUser.class),
+                    examples = @ExampleObject(name = "Utilisateur",
+                        value = "{\"firstName\":\"Awa\",\"lastName\":\"Diallo\",\"email\":\"awa@example.com\",\"phone\":\"+237699000000\"}")))
+            BankUser user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bankUserService.createUser(user));
     }
 
@@ -56,21 +69,36 @@ public class UserController {
     @GetMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Consulter un utilisateur")
-    public ResponseEntity<BankUser> getUser(@PathVariable Long id) {
+    public ResponseEntity<BankUser> getUser(
+            @Parameter(description = "Identifiant utilisateur", example = "1")
+            @PathVariable Long id) {
         return ResponseEntity.ok(bankUserService.getUser(id));
     }
 
     @PutMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Mettre a jour un utilisateur")
-    public ResponseEntity<BankUser> updateUser(@PathVariable Long id, @Valid @RequestBody BankUser user) {
+        public ResponseEntity<BankUser> updateUser(
+            @Parameter(description = "Identifiant utilisateur", example = "1")
+            @PathVariable Long id,
+            @Valid
+            @RequestBody
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                required = true,
+                content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = BankUser.class),
+                    examples = @ExampleObject(name = "Utilisateur",
+                        value = "{\"firstName\":\"Awa\",\"lastName\":\"Diallo\",\"email\":\"awa2@example.com\",\"phone\":\"+237699000000\"}")))
+            BankUser user) {
         return ResponseEntity.ok(bankUserService.updateUser(id, user));
     }
 
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Supprimer un utilisateur")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(
+            @Parameter(description = "Identifiant utilisateur", example = "1")
+            @PathVariable Long id) {
         bankUserService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

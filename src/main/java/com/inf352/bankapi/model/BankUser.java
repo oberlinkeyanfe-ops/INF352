@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.CascadeType;
@@ -69,6 +70,14 @@ public class BankUser {
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         @Column(name = "created_at", nullable = false, updatable = false)
         private Instant createdAt;
+
+        @Schema(description = "Indique si l'utilisateur a vérifié son email", example = "false", accessMode = Schema.AccessMode.READ_ONLY)
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+        @Column(nullable = false)
+        private boolean verified = false;
+
+        @JsonIgnore
+        private String verificationCode;
 
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -185,5 +194,21 @@ public class BankUser {
 
         public void setAccounts(List<BankAccount> accounts) {
                 this.accounts = accounts;
+        }
+
+        public boolean isVerified() {
+                return verified;
+        }
+
+        public void setVerified(boolean verified) {
+                this.verified = verified;
+        }
+
+        public String getVerificationCode() {
+                return verificationCode;
+        }
+
+        public void setVerificationCode(String verificationCode) {
+                this.verificationCode = verificationCode;
         }
 }

@@ -55,6 +55,16 @@ public class BankAccount {
     @JsonIgnore
     private BankUser user;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "bank_id", nullable = false)
+    @JsonIgnore
+    private Bank bank;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_type_id", nullable = false)
+    @JsonIgnore
+    private AccountType accountType;
+
     @OneToMany(mappedBy = "account")
     @JsonIgnore
     private List<BankTransaction> transactions = new ArrayList<>();
@@ -62,8 +72,10 @@ public class BankAccount {
     public BankAccount() {
     }
 
-    public BankAccount(BankUser user) {
+    public BankAccount(BankUser user, Bank bank, AccountType accountType) {
         this.user = user;
+        this.bank = bank;
+        this.accountType = accountType;
     }
 
     @PrePersist
@@ -130,5 +142,21 @@ public class BankAccount {
 
     public void setTransactions(List<BankTransaction> transactions) {
         this.transactions = transactions;
+    }
+
+    public Bank getBank() {
+        return bank;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public AccountType getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(AccountType accountType) {
+        this.accountType = accountType;
     }
 }

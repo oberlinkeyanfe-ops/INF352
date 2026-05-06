@@ -3,6 +3,7 @@ package com.inf352.bankapi.controller;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inf352.bankapi.model.BankAccount;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -49,9 +49,15 @@ class AccountControllerTest {
         account.setCreatedAt(Instant.parse("2026-04-16T00:00:00Z"));
         account.setUser(new BankUser());
 
-        when(bankAccountService.createAccount(1L)).thenReturn(account);
+        when(bankAccountService.createAccount(1L, 1L, 1L)).thenReturn(account);
 
-        mockMvc.perform(post("/api/users/1/accounts"))
+        mockMvc.perform(post("/api/accounts")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(Map.of(
+                    "userId", 1,
+                    "bankId", 1,
+                    "accountTypeId", 1
+                ))))
                 .andExpect(status().isOk())
             .andExpect(jsonPath("$.accountNumber").value("ACC-123456789ABC"));
     }
@@ -67,7 +73,7 @@ class AccountControllerTest {
 
         when(bankAccountService.listAccountsForUser(eq(1L))).thenReturn(List.of(account));
 
-        mockMvc.perform(get("/api/users/1/accounts"))
+        mockMvc.perform(get("/api/accounts/user/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].accountNumber").value("ACC-123456789ABC"));
     }
