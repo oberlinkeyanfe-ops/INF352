@@ -73,8 +73,8 @@ public class BankUser {
 
         @Schema(description = "Indique si l'utilisateur a vérifié son email", example = "false", accessMode = Schema.AccessMode.READ_ONLY)
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-        @Column(nullable = false)
-        private boolean verified = false;
+        @Column(nullable = true)
+        private Boolean verified = false;
 
         @JsonIgnore
         private String verificationCode;
@@ -196,11 +196,11 @@ public class BankUser {
                 this.accounts = accounts;
         }
 
-        public boolean isVerified() {
+        public Boolean isVerified() {
                 return verified;
         }
 
-        public void setVerified(boolean verified) {
+        public void setVerified(Boolean verified) {
                 this.verified = verified;
         }
 
