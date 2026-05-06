@@ -38,7 +38,14 @@ public class BankUserService {
         user.setVerified(false);
 
         BankUser savedUser = userRepository.save(user);
-        emailService.sendVerificationEmail(savedUser.getEmail(), verificationCode);
+        
+        // Tentative d'envoi d'email, mais ne pas échouer si l'email échoue
+        try {
+            emailService.sendVerificationEmail(savedUser.getEmail(), verificationCode);
+        } catch (Exception e) {
+            System.err.println("⚠️  Impossible d'envoyer l'email de vérification: " + e.getMessage());
+            // Continuer sans échouer
+        }
 
         return savedUser;
     }

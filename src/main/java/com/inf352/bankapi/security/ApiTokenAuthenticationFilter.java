@@ -29,13 +29,30 @@ public class ApiTokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.startsWith("/api/auth/")
-                || (path.equals("/api/users") && "POST".equalsIgnoreCase(request.getMethod()))
-                || path.startsWith("/v3/api-docs")
-                || path.startsWith("/swagger-ui")
-                || path.equals("/api-docs")
-                || path.equals("/swagger-ui.html")
-                || path.equals("/error");
+        String method = request.getMethod().toUpperCase();
+        
+        // Exclude public endpoints completely
+        if (path.startsWith("/api/auth/") 
+            || path.startsWith("/v3/api-docs")
+            || path.startsWith("/swagger-ui")
+            || path.equals("/api-docs")
+            || path.equals("/swagger-ui.html")
+            || path.equals("/error")
+            || path.startsWith("/actuator")) {
+            return true;
+        }
+        
+        // Exclude POST /api/users (user registration - public endpoint)
+        if ("POST".equals(method) && path.equals("/api/users")) {
+            return true;
+        }
+        
+        // Exclude OPTIONS requests (preflight)
+        if ("OPTIONS".equals(method)) {
+            return true;
+        }
+        
+        return false;
     }
 
     @Override
