@@ -1,0 +1,79 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Length 1293 >>
+stream
+BT
+/F1 11 Tf
+45 790 Td
+14 TL
+(?# Rapport de tests) Tj
+T* () Tj
+T* (- Date: 2026-04-21 22:32:05) Tj
+T* (- Statut global: SUCCES) Tj
+T* () Tj
+T* (## METHODE D'EXECUTION) Tj
+T* () Tj
+T* (Scripts disponibles:) Tj
+T* () Tj
+T* (- scripts/run-tests.ps1) Tj
+T* (- scripts/run-tests.bat) Tj
+T* (- scripts/run-tests.sh) Tj
+T* () Tj
+T* (Commande utilisee pour ce rapport:) Tj
+T* () Tj
+T* (- powershell -ExecutionPolicy Bypass -File scripts/run-tests.ps1) Tj
+T* () Tj
+T* (## RESUME) Tj
+T* () Tj
+T* (| Metrique | Valeur |) Tj
+T* (|---|---:|) Tj
+T* (| Tests executes | 4 |) Tj
+T* (| Echecs | 0 |) Tj
+T* (| Erreurs | 0 |) Tj
+T* (| Ignores | 0 |) Tj
+T* (| Temps total \(s\) | 5.72 |) Tj
+T* () Tj
+T* (## DETAIL PAR SUITE) Tj
+T* () Tj
+T* (| Suite | Tests | Echecs | Erreurs | Ignores | Temps \(s\) |) Tj
+T* (|---|---:|---:|---:|---:|---:|) Tj
+T* (| com.inf352.bankapi.controller.AccountControllerTest | 2 | 0 | 0 | 0 | 4.527 |) Tj
+T* (| com.inf352.bankapi.controller.AuthControllerTest | 1 | 0 | 0 | 0 | 0.741 |) Tj
+T* (| com.inf352.bankapi.controller.TransactionControllerTest | 1 | 0 | 0 | 0 | 0.452 |) Tj
+T* () Tj
+T* (## EMPLACEMENT DES RAPPORTS BRUTS) Tj
+T* () Tj
+T* (- target/surefire-reports) Tj
+T* () Tj
+T* (## CONCLUSION) Tj
+T* () Tj
+T* (Le logiciel passe tous les tests automatiques disponibles.) Tj
+ET
+endstream
+endobj
+3 0 obj
+<< /Type /Page /Parent 4 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >>
+endobj
+4 0 obj
+<< /Type /Pages /Count 1 /Kids [3 0 R] >>
+endobj
+5 0 obj
+<< /Type /Catalog /Pages 4 0 R >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000001430 00000 n 
+0000001556 00000 n 
+0000001613 00000 n 
+trailer
+<< /Size 6 /Root 5 0 R >>
+startxref
+1662
+%%EOF

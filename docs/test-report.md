@@ -1,28 +1,42 @@
-# Rapport de tests
+﻿# Rapport de tests
 
-## Périmètre
-- Contrôleur utilisateurs
-- Contrôleur authentification par token
-- Contrôleur comptes
-- Contrôleur transactions
+- Date: 2026-04-21 22:32:05
+- Statut global: SUCCES
 
-## Exécution
-Lancer les tests avec :
+## Methode d'execution
 
-```powershell
-.\scripts\run-tests.ps1
-```
+Scripts disponibles:
 
-ou :
+- scripts/run-tests.ps1
+- scripts/run-tests.bat
+- scripts/run-tests.sh
 
-```bash
-./scripts/run-tests.sh
-```
+Commande utilisee pour ce rapport:
 
-## Résultats attendus
-- Les tests unitaires et web MVC doivent passer.
-- Les rapports Maven sont générés dans `target/surefire-reports/`.
+- powershell -ExecutionPolicy Bypass -File scripts/run-tests.ps1
 
-## Remarques
-- Le projet utilise un token API de type Bearer pour protéger les endpoints sensibles.
-- Le endpoint `POST /api/users` reste public pour permettre l’initialisation du premier utilisateur.
+## Resume
+
+| Metrique | Valeur |
+|---|---:|
+| Tests executes | 4 |
+| Echecs | 0 |
+| Erreurs | 0 |
+| Ignores | 0 |
+| Temps total (s) | 5.72 |
+
+## Detail par suite
+
+| Suite | Tests | Echecs | Erreurs | Ignores | Temps (s) |
+|---|---:|---:|---:|---:|---:|
+| com.inf352.bankapi.controller.AccountControllerTest | 2 | 0 | 0 | 0 | 4.527 |
+| com.inf352.bankapi.controller.AuthControllerTest | 1 | 0 | 0 | 0 | 0.741 |
+| com.inf352.bankapi.controller.TransactionControllerTest | 1 | 0 | 0 | 0 | 0.452 |
+
+## Emplacement des rapports bruts
+
+- target/surefire-reports
+
+## Conclusion
+
+Le logiciel passe tous les tests automatiques disponibles.

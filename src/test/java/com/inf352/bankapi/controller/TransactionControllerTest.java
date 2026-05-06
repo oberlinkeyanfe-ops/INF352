@@ -9,6 +9,8 @@ import com.inf352.bankapi.model.BankAccount;
 import com.inf352.bankapi.model.BankTransaction;
 import com.inf352.bankapi.model.TransactionType;
 import com.inf352.bankapi.controller.UserRepository;
+import com.inf352.bankapi.exception.InsufficientFundsException;
+import com.inf352.bankapi.exception.ResourceNotFoundException;
 import com.inf352.bankapi.service.BankAccountService;
 import com.inf352.bankapi.service.BankTransactionService;
 import org.junit.jupiter.api.Test;
@@ -67,4 +69,87 @@ class TransactionControllerTest {
                 .andExpect(jsonPath("$.type").value("DEPOSIT"))
                 .andExpect(jsonPath("$.afterBalance").value(50));
     }
+
+            @Test
+            void depositShouldReturnNotFound() throws Exception {
+            when(bankTransactionService.deposit(eq("ACC-404"), eq(BigDecimal.valueOf(50))))
+                .thenThrow(new ResourceNotFoundException("Compte introuvable"));
+
+            Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(50));
+
+            mockMvc.perform(post("/api/accounts/ACC-404/deposit")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+            }
+
+            @Test
+            void depositShouldFailValidation() throws Exception {
+            Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(-1));
+
+            mockMvc.perform(post("/api/accounts/ACC-123456789ABC/deposit")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void withdrawShouldReturnTransaction() throws Exception {
+            BankTransaction transaction = new BankTransaction();
+            transaction.setId(2L);
+            transaction.setType(TransactionType.WITHDRAWAL);
+            transaction.setAmount(BigDecimal.valueOf(40));
+            transaction.setBeforeBalance(BigDecimal.valueOf(100));
+            transaction.setAfterBalance(BigDecimal.valueOf(60));
+            transaction.setCreatedAt(Instant.parse("2026-04-16T00:00:00Z"));
+            transaction.setAccount(new BankAccount());
+
+            when(bankTransactionService.withdraw(eq("ACC-123456789ABC"), eq(BigDecimal.valueOf(40))))
+                .thenReturn(transaction);
+
+            Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(40));
+
+            mockMvc.perform(post("/api/accounts/ACC-123456789ABC/withdraw")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("WITHDRAWAL"))
+                .andExpect(jsonPath("$.afterBalance").value(60));
+            }
+
+            @Test
+            void withdrawShouldReturnNotFound() throws Exception {
+            when(bankTransactionService.withdraw(eq("ACC-404"), eq(BigDecimal.valueOf(40))))
+                .thenThrow(new ResourceNotFoundException("Compte introuvable"));
+
+            Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(40));
+
+            mockMvc.perform(post("/api/accounts/ACC-404/withdraw")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+            }
+
+            @Test
+            void withdrawShouldReturnInsufficientFunds() throws Exception {
+            when(bankTransactionService.withdraw(eq("ACC-123456789ABC"), eq(BigDecimal.valueOf(5000))))
+                .thenThrow(new InsufficientFundsException("Solde insuffisant"));
+
+            Map<String, BigDecimal> request = Map.of("amount", BigDecimal.valueOf(5000));
+
+            mockMvc.perform(post("/api/accounts/ACC-123456789ABC/withdraw")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+            }
+
+            @Test
+            void withdrawShouldFailValidation() throws Exception {
+            Map<String, BigDecimal> request = Map.of("amount", BigDecimal.ZERO);
+
+            mockMvc.perform(post("/api/accounts/ACC-123456789ABC/withdraw")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+            }
 }
